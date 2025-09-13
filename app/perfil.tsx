@@ -22,7 +22,6 @@ export default function Perfil() {
   const onChange = (key: string, value: string) => setForm({ ...form, [key]: value });
 
   const onSubmit = () => {
-    // Aquí guardarías al backend
     Alert.alert("✅ Datos guardados");
   };
 
