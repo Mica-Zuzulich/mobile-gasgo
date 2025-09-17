@@ -1,4 +1,3 @@
-// styles/NotificacionesStyles.ts
 import { StyleSheet } from "react-native";
 
 export const notificacionesStyles = StyleSheet.create({

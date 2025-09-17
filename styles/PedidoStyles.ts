@@ -1,73 +1,67 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+import { Colors } from "../constants/Colors";
 
-export const styles = StyleSheet.create({
+const { width } = Dimensions.get("window");
+const CARD_MARGIN = 10;
+const CARD_WIDTH = (width - CARD_MARGIN * 3) / 2;
+
+export default StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.light.background,
+    padding: CARD_MARGIN,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+  lista: {
+    paddingBottom: 20,
   },
   card: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  cardPrice: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  cantidadControls: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cantidadBtn: {
-    backgroundColor: "#007AFF",
+    width: CARD_WIDTH,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    marginBottom: CARD_MARGIN,
+    marginHorizontal: CARD_MARGIN / 2,
     padding: 10,
-    borderRadius: 8,
-    marginHorizontal: 10,
-  },
-  cantidadBtnText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  cantidadSpan: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  totalContainer: {
-    marginTop: 20,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
   },
-  totalText: {
-    fontSize: 20,
-    fontWeight: "bold",
+  imagen: {
+    width: "100%",
+    height: CARD_WIDTH * 0.9,
+    resizeMode: "contain",
     marginBottom: 10,
   },
-  btnConfirmar: {
-    backgroundColor: "#34C759",
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 8,
-  },
-  btnConfirmarText: {
-    color: "#fff",
+  nombre: {
     fontSize: 16,
     fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 5,
+    color: Colors.light.tint,
   },
-  btnDisabled: {
-    backgroundColor: "#aaa",
+  precio: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 10,
+  },
+  botonPedir: {
+    marginTop: 5,
+    backgroundColor: "#0a7ea4",
+    paddingVertical: 8,
+    paddingHorizontal: 25,
+    borderRadius: 12,
+    shadowColor: "#0a7ea4",
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
+  textoBotonPedir: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+    textAlign: "center",
   },
 });

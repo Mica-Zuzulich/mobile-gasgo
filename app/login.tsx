@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { styles } from '../styles/LoginStyles';
+import { Colors, GlobalStyles } from '../styles/GlobalStyles';
+import { LoginStyles as styles } from '../styles/LoginStyles';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email || !password) {
       setError('Por favor completa todos los campos');
       return;
@@ -21,15 +25,39 @@ export default function Login() {
       return;
     }
 
+    setLoading(true);
     setError('');
-    console.log('Login info:', { email, password });
-    // Acá podés hacer router.push("/home") o llamar a tu backend
+
+    try {
+      const SERVER_IP = '192.168.0.185'; 
+
+      const response = await fetch(`http://${SERVER_IP}:3000/api/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error en el login');
+      }
+
+      await login(data.user);
+      Alert.alert('¡Bienvenido!', `Hola ${data.user.nombre}`);
+      router.replace('/');
+
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setError(error.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Iniciar Sesión</Text>
-
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <TextInput
@@ -39,6 +67,8 @@ export default function Login() {
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
+        placeholderTextColor={Colors.gray}
+        editable={!loading}
       />
       <TextInput
         style={styles.input}
@@ -46,14 +76,23 @@ export default function Login() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        placeholderTextColor={Colors.gray}
+        editable={!loading}
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Ingresar</Text>
+      <TouchableOpacity
+        style={[GlobalStyles.button, { backgroundColor: Colors.primary }, loading && { opacity: 0.7 }]}
+        onPress={handleSubmit}
+        disabled={loading}
+      >
+        {loading ? <ActivityIndicator color={Colors.white} /> : <Text style={[GlobalStyles.buttonText, { color: Colors.white }]}>Ingresar</Text>}
       </TouchableOpacity>
 
       <Text style={styles.signupText}>
-        ¿No tienes cuenta? <Text style={styles.signupLink} onPress={() => router.push("/signup")}>Regístrate</Text>
+        ¿No tienes cuenta?{" "}
+        <Text style={[styles.signupLink, { color: Colors.secondary }]} onPress={() => !loading && router.push("/signup")}>
+          Regístrate
+        </Text>
       </Text>
     </View>
   );

@@ -1,23 +1,79 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
+import { Colors, GlobalStyles } from './GlobalStyles';
 
 export const homeStyles = StyleSheet.create({
-  container: { padding: 18, backgroundColor: "#fff" },
-  title: { fontSize: 28, fontWeight: "800", textAlign: "center", marginTop: 6 },
-  subtitle: { textAlign: "center", color: "#666", marginVertical: 10, fontSize: 15 },
-  actions: { flexDirection: "row", justifyContent: "center", marginVertical: 18 },
-  btn: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginHorizontal: 8,
-    minWidth: 140,
-    alignItems: "center",
+  container: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: Colors.background,
   },
-  primary: { backgroundColor: "#0d6ea8" },
-  secondary: { backgroundColor: "#2dbb4a" },
-  btnText: { color: "#fff", fontWeight: "700" },
-  cards: { marginTop: 6 },
-  card: { backgroundColor: "#f6f8fa", borderRadius: 12, padding: 14, marginBottom: 12, alignItems: "center" },
-  cardTitle: { fontWeight: "700", fontSize: 16, marginBottom: 6 },
-  cardText: { textAlign: "center", color: "#666" },
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: Colors.primary,
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+    letterSpacing: 0.5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: Colors.gray,
+    textAlign: 'center',
+    marginBottom: 30,
+    lineHeight: 22,
+    paddingHorizontal: 20,
+  },
+  actions: {
+    gap: 15,
+    marginBottom: 30,
+  },
+  btn: {
+    ...GlobalStyles.button,
+    paddingVertical: 16,
+  },
+  primary: {
+    backgroundColor: Colors.primary,
+  },
+  secondary: {
+    backgroundColor: Colors.white,
+    borderWidth: 2,
+    borderColor: Colors.primary,
+  },
+  btnText: {
+    ...GlobalStyles.buttonText,
+  },
+  primaryBtnText: {
+    color: Colors.white,
+  },
+  secondaryBtnText: {
+    color: Colors.primary,
+  },
+  cards: {
+    gap: 16,
+  },
+  card: {
+    ...GlobalStyles.card,
+    padding: 24,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.primary,
+    marginBottom: 8,
+  },
+  cardText: {
+    fontSize: 14,
+    color: Colors.text,
+    lineHeight: 20,
+  },
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: Colors.lightSecondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
 });

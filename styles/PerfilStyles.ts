@@ -1,27 +1,29 @@
 import { StyleSheet } from "react-native";
+import { Colors, GlobalStyles } from "./GlobalStyles";
 
-export const styles = StyleSheet.create({
+export const PerfilStyles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.background,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: Colors.primary,
   },
   card: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 12,
-    padding: 15,
+    ...GlobalStyles.card,
+    padding: 20,
     marginBottom: 20,
   },
   subtitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+    color: Colors.primary,
   },
   row: {
     flexDirection: "row",
@@ -33,11 +35,12 @@ export const styles = StyleSheet.create({
     flex: 1,
     minWidth: "30%",
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: Colors.gray,
     paddingVertical: 8,
     paddingHorizontal: 5,
     marginBottom: 10,
     fontSize: 16,
+    color: Colors.text,
   },
   actions: {
     marginTop: 10,
@@ -57,14 +60,15 @@ export const styles = StyleSheet.create({
   btnText: {
     fontSize: 16,
     fontWeight: "bold",
+    color: Colors.white,
   },
   ghost: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: Colors.lightGray,
   },
   danger: {
-    backgroundColor: "#ff3b30",
+    backgroundColor: Colors.danger,
   },
   primary: {
-    backgroundColor: "#007AFF",
+    backgroundColor: Colors.primary,
   },
 });
