@@ -38,3 +38,22 @@ yarn-error.*
 
 app-example
 env/
+# Ignorar dependencias
+node_modules/
+.expo/
+.expo-shared/
+
+# Ignorar build de Android e iOS
+android/
+ios/
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Configuraciones de VSCode
+.vscode/
+
+# Archivos del sistema
+.DS_Store
