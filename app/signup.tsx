@@ -40,23 +40,23 @@ export default function Signup() {
     setError('');
 
     try {
-      const SERVER_IP = '192.168.0.185';
+      const SERVER_URL = 'https://d860d28522d7.ngrok-free.app';
 
-      const response = await fetch(`http://${SERVER_IP}:3000/api/users/register`, {
+      const response = await fetch(`${SERVER_URL}/api/users/register`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nombre,
-          apellido,
-          email,
-          password,
-          telefono,
-          dni,
-          direccion_fiscal: direccion,
-          ciudad,
-          barrio
-        }),
-      });
+        nombre,
+        apellido,
+        email,
+        password,
+        telefono,
+        dni,
+        direccion_fiscal: direccion,
+        ciudad,
+        barrio
+  }),
+});
 
       const data = await response.json();
 

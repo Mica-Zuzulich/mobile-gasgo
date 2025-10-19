@@ -29,18 +29,31 @@ export default function Login() {
     setError('');
 
     try {
-      const SERVER_IP = '192.168.0.185'; 
+      const SERVER_URL = 'https://d860d28522d7.ngrok-free.app';
 
-      const response = await fetch(`http://${SERVER_IP}:3000/api/users/login`, {
+      // ✅ CORREGIDO: Quita el "http://" duplicado
+      const response = await fetch(`${SERVER_URL}/api/users/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      // Verifica si la respuesta es JSON válido
+      const contentType = response.headers.get('content-type');
+      let data;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(`Respuesta no JSON: ${text}`);
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error en el login');
+        throw new Error(data.error || `Error ${response.status}: ${response.statusText}`);
       }
 
       await login(data.user);

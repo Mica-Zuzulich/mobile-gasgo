@@ -3,6 +3,7 @@ import { View, Text, FlatList, ScrollView, TouchableOpacity, ActivityIndicator, 
 import { HistorialStyles } from '../styles/HistorialStyles';
 import { Colors } from '../styles/GlobalStyles';
 import { Ionicons } from '@expo/vector-icons';
+import { API_URL } from '@env'; 
 
 type Pedido = {
   id: number;
@@ -20,9 +21,8 @@ export default function Historial() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<EstadoFilter>('todos');
 
-  // IP del servidor accesible desde el móvil
-  const SERVER_IP = '192.168.0.185';
-  const API_URL = `http://${SERVER_IP}:3000/api/orders`;
+  // ✅ CAMBIO: Usar localhost en lugar de IP
+  const API_URL = 'http://localhost:3000/api/orders';
 
   const fetchPedidos = async () => {
     try {
