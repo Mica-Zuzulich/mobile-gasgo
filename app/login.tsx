@@ -29,17 +29,17 @@ export default function Login() {
     setError('');
 
     try {
-      const SERVER_URL = 'https://d860d28522d7.ngrok-free.app';
+      //USANDO RAILWAY
+       const SERVER_URL = process.env.REACT_APP_API_URL;
 
-      // ✅ CORREGIDO: Quita el "http://" duplicado
       const response = await fetch(`${SERVER_URL}/api/users/login`, {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
         },
-        body: JSON.stringify({ email, password }),
-      });
+       body: JSON.stringify({ email, password }),
+});
 
       // Verifica si la respuesta es JSON válido
       const contentType = response.headers.get('content-type');

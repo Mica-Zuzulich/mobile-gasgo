@@ -40,23 +40,26 @@ export default function Signup() {
     setError('');
 
     try {
-      const SERVER_URL = 'https://d860d28522d7.ngrok-free.app';
+      //  USANDO RAILWAY
+      const SERVER_URL = 'https://gasgo-backend.up.railway.app/api';
 
-      const response = await fetch(`${SERVER_URL}/api/users/register`, { 
+      const response = await fetch(`${SERVER_URL}/users/register`, { 
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-        nombre,
-        apellido,
-        email,
-        password,
-        telefono,
-        dni,
-        direccion_fiscal: direccion,
-        ciudad,
-        barrio
-  }),
-});
+          nombre,
+          apellido,
+          email,
+          password,
+          telefono,
+          dni,
+          direccion_fiscal: direccion,
+          ciudad,
+          barrio
+        }),
+      });
 
       const data = await response.json();
 
