@@ -2,15 +2,20 @@ import React, { useState } from "react";
 import { View, Text, Image, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import * as Location from "expo-location";
-import { productosBase } from "../constants/productos";
+import { productosBase, Producto } from "../constants/productos";
 import styles from "../styles/DetalleStyles";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useAuth } from "../contexts/AuthContext"; 
+const SERVER_URL = 'https://gasgo-backend-production.up.railway.app';
+const API_BASE_URL = `${SERVER_URL}/api/orders`;
 
 export default function Detalle() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id: string }>();
   const id = params.id;
-
+  
+  const { user } = useAuth(); 
+  
   const producto = productosBase.find((p) => p.id === Number(id));
   const [cantidad, setCantidad] = useState(0);
   const [direccion, setDireccion] = useState("");
@@ -36,11 +41,18 @@ export default function Detalle() {
     const dir = await Location.reverseGeocodeAsync(loc.coords);
     if (dir.length > 0) {
       const d = dir[0];
-      setDireccion(`${d.street || ""} ${d.name || ""}, ${d.city || ""}`);
+      const fullAddress = [d.street, d.name, d.city, d.region].filter(Boolean).join(' ');
+      setDireccion(fullAddress);
     }
   };
 
-  const confirmarPedido = () => {
+  const confirmarPedido = async () => { 
+    if (!user || !user.id) {
+        Alert.alert("Acceso denegado", "Debes iniciar sesión para realizar un pedido.");
+       
+        return;
+    }
+
     if (cantidad === 0) {
       Alert.alert("Atención", "Selecciona al menos 1 unidad");
       return;
@@ -54,14 +66,60 @@ export default function Detalle() {
       return;
     }
 
-    Alert.alert(
-      "Pedido confirmado",
-      `Has pedido ${cantidad} ${producto?.nombre}(s) 🚚\nSe enviará a: ${direccion}`
-    );
+    if (!producto) {
+      Alert.alert("Error", "Producto no encontrado.");
+      return;
+    }
 
-    setCantidad(0);
-    setDireccion("");
-    setUbicacion(null);
+    const total = cantidad * producto.precio;
+    
+    const pedidoData = {
+      user_id: user.id,
+      total: total,
+      estado: 'pendiente', 
+      productos: [
+        {
+          product_id: producto.id,
+          cantidad: cantidad,
+          precio_unitario: producto.precio, 
+        }
+      ],
+      direccion_entrega: direccion, 
+      ubicacion_lat: ubicacion?.lat || null,
+      ubicacion_lon: ubicacion?.lon || null,
+    };
+    
+    try {
+      const res = await fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pedidoData),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Error en el servidor: ${res.status} - ${errorText}`);
+      }
+
+      Alert.alert(
+        "Pedido confirmado",
+        `Has pedido ${cantidad} ${producto.nombre}(s) 🚚\nSe enviará a: ${direccion}`
+      );
+
+      setCantidad(0);
+      setDireccion("");
+      setUbicacion(null);
+      router.back(); 
+
+    } catch (error) {
+      console.error('Error al enviar el pedido:', error);
+      Alert.alert(
+        "Error al crear pedido", 
+        "Hubo un problema al conectar con el servidor o los datos son incorrectos. Revisa los logs de Railway."
+      );
+    }
   };
 
   if (!producto) return <Text>Cargando producto...</Text>;

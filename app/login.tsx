@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { Colors, GlobalStyles } from '../styles/GlobalStyles';
 import { LoginStyles as styles } from '../styles/LoginStyles';
 import { useAuth } from '../contexts/AuthContext';
+// import { REACT_APP_API_URL } from '@env'; 
 
 export default function Login() {
   const router = useRouter();
@@ -29,9 +30,9 @@ export default function Login() {
     setError('');
 
     try {
-      //USANDO RAILWAY
-       const SERVER_URL = process.env.REACT_APP_API_URL;
-
+    
+      const SERVER_URL = 'https://gasgo-backend-production.up.railway.app'; 
+      
       const response = await fetch(`${SERVER_URL}/api/users/login`, {
         method: 'POST',
         headers: { 
@@ -41,7 +42,6 @@ export default function Login() {
        body: JSON.stringify({ email, password }),
 });
 
-      // Verifica si la respuesta es JSON válido
       const contentType = response.headers.get('content-type');
       let data;
       

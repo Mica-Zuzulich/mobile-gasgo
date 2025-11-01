@@ -3,7 +3,7 @@ import { View, Text, FlatList, ScrollView, TouchableOpacity, ActivityIndicator, 
 import { HistorialStyles } from '../styles/HistorialStyles';
 import { Colors } from '../styles/GlobalStyles';
 import { Ionicons } from '@expo/vector-icons';
-import { API_URL } from '@env'; 
+// import { API_URL } from '@env'; 
 
 type Pedido = {
   id: number;
@@ -16,23 +16,23 @@ type Pedido = {
 
 type EstadoFilter = 'todos' | 'pendiente' | 'completado' | 'cancelado';
 
+const SERVER_URL = 'https://gasgo-backend-production.up.railway.app';
+const API_BASE_URL = `${SERVER_URL}/api/orders`;
+
 export default function Historial() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<EstadoFilter>('todos');
 
-  // ✅ CAMBIO: Usar localhost en lugar de IP
-  const API_URL = 'http://localhost:3000/api/orders';
-
   const fetchPedidos = async () => {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(API_BASE_URL); 
       if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
       const data: Pedido[] = await res.json();
       setPedidos(data);
     } catch (err) {
       console.error('Error al traer pedidos:', err);
-      setPedidos([]);
+      setPedidos([]); 
     } finally {
       setLoading(false);
     }
@@ -65,7 +65,7 @@ export default function Historial() {
           text: "Sí", 
           onPress: async () => {
             try {
-              const res = await fetch(`${API_URL}/${pedidoId}`, {
+              const res = await fetch(`${API_BASE_URL}/${pedidoId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
               });
@@ -82,6 +82,34 @@ export default function Historial() {
     );
   };
 
+  const renderHeader = () => (
+    <View>
+      <Text style={HistorialStyles.title}>Historial de Pedidos</Text>
+      
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
+        <View style={HistorialStyles.filterContainer}>
+          {(['todos', 'pendiente', 'completado', 'cancelado'] as EstadoFilter[]).map(filtro => (
+            <TouchableOpacity
+              key={filtro}
+              style={[
+                HistorialStyles.filterButton,
+                filter === filtro && HistorialStyles.filterButtonActive
+              ]}
+              onPress={() => setFilter(filtro)}
+            >
+              <Text style={[
+                HistorialStyles.filterText,
+                filter === filtro && HistorialStyles.filterTextActive
+              ]}>
+                {filtro.charAt(0).toUpperCase() + filtro.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
+
   if (loading) {
     return (
       <View style={HistorialStyles.loadingContainer}>
@@ -92,80 +120,58 @@ export default function Historial() {
   }
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
-      <View style={HistorialStyles.container}>
-        <Text style={HistorialStyles.title}>Historial de Pedidos</Text>
-
-        {/* Filtros */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
-          <View style={HistorialStyles.filterContainer}>
-            {(['todos', 'pendiente', 'completado', 'cancelado'] as EstadoFilter[]).map(filtro => (
-              <TouchableOpacity
-                key={filtro}
-                style={[
-                  HistorialStyles.filterButton,
-                  filter === filtro && HistorialStyles.filterButtonActive
-                ]}
-                onPress={() => setFilter(filtro)}
-              >
-                <Text style={[
-                  HistorialStyles.filterText,
-                  filter === filtro && HistorialStyles.filterTextActive
-                ]}>
-                  {filtro.charAt(0).toUpperCase() + filtro.slice(1)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
-
-        {filteredPedidos.length === 0 ? (
-          <View style={HistorialStyles.loadingContainer}>
+    <View style={HistorialStyles.container}>
+      {filteredPedidos.length === 0 ? (
+        <View style={{ flex: 1 }}>
+          {renderHeader()}
+          <View style={[HistorialStyles.loadingContainer, { flex: 0, marginTop: 40 }]}>
             <Ionicons name="receipt" size={60} color={Colors.gray} />
             <Text style={HistorialStyles.noPedidos}>
               {filter === 'todos' ? 'No tenés pedidos realizados.' : `No hay pedidos ${filter}`}
             </Text>
           </View>
-        ) : (
-          <FlatList
-            data={filteredPedidos}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => {
-              const totalNumber = Number(item.total || 0);
-              const estadoColor = getEstadoColor(item.estado);
+        </View>
+      ) : (
+        <FlatList
+          data={filteredPedidos}
+          keyExtractor={item => item.id.toString()}
+          ListHeaderComponent={renderHeader}
+          renderItem={({ item }) => {
+            const totalNumber = Number(item.total || 0);
+            const estadoColor = getEstadoColor(item.estado);
 
-              return (
-                <View style={HistorialStyles.pedidoCard}>
-                  <View style={HistorialStyles.pedidoHeader}>
-                    <Text style={HistorialStyles.pedidoId}>Pedido #{item.id}</Text>
-                    <View style={[HistorialStyles.estadoBadge, { backgroundColor: estadoColor.bg }]}>
-                      <Text style={[HistorialStyles.estadoText, { color: estadoColor.text }]}>
-                        {item.estado?.toUpperCase() || 'DESCONOCIDO'}
-                      </Text>
-                    </View>
+            return (
+              <View style={HistorialStyles.pedidoCard}>
+                <View style={HistorialStyles.pedidoHeader}>
+                  <Text style={HistorialStyles.pedidoId}>Pedido #{item.id}</Text>
+                  <View style={[HistorialStyles.estadoBadge, { backgroundColor: estadoColor.bg }]}>
+                    <Text style={[HistorialStyles.estadoText, { color: estadoColor.text }]}>
+                      {item.estado?.toUpperCase() || 'DESCONOCIDO'}
+                    </Text>
                   </View>
-
-                  <Text style={HistorialStyles.clienteText}>{item.cliente || 'Sin nombre'}</Text>
-                  <Text style={HistorialStyles.pedidoText}>📧 {item.email || 'Sin email'}</Text>
-                  <Text style={HistorialStyles.totalText}>Total: ${totalNumber.toFixed(2)}</Text>
-                  <Text style={HistorialStyles.fechaText}>
-                    📅 {item.created_at ? new Date(item.created_at).toLocaleString('es-AR') : 'Fecha desconocida'}
-                  </Text>
-
-                  {item.estado?.toLowerCase() === 'pendiente' && (
-                    <TouchableOpacity
-                      style={HistorialStyles.cancelButton}
-                      onPress={() => handleCancelar(item.id)}
-                    >
-                      <Text style={HistorialStyles.cancelButtonText}>Cancelar pedido</Text>
-                    </TouchableOpacity>
-                  )}
                 </View>
-              );
-            }}
-          />
-        )}
-      </View>
-    </ScrollView>
+
+                <Text style={HistorialStyles.clienteText}>{item.cliente || 'Sin nombre'}</Text>
+                <Text style={HistorialStyles.pedidoText}>📧 {item.email || 'Sin email'}</Text>
+                <Text style={HistorialStyles.totalText}>Total: ${totalNumber.toFixed(2)}</Text>
+                <Text style={HistorialStyles.fechaText}>
+                  📅 {item.created_at ? new Date(item.created_at).toLocaleString('es-AR') : 'Fecha desconocida'}
+                </Text>
+
+                {item.estado?.toLowerCase() === 'pendiente' && (
+                  <TouchableOpacity
+                    style={HistorialStyles.cancelButton}
+                    onPress={() => handleCancelar(item.id)}
+                  >
+                    <Text style={HistorialStyles.cancelButtonText}>Cancelar pedido</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            );
+          }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      )}
+    </View>
   );
 }

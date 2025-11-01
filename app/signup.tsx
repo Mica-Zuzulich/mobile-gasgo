@@ -40,7 +40,6 @@ export default function Signup() {
     setError('');
 
     try {
-      //  USANDO RAILWAY
       const SERVER_URL = 'https://gasgo-backend.up.railway.app/api';
 
       const response = await fetch(`${SERVER_URL}/users/register`, { 
